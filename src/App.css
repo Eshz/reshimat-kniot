@@ -256,14 +256,14 @@ html, body {
 .checkbox:checked::after {
   content: '';
   position: absolute;
-  top: 3px;
-  right: 6px;
-  width: 6px;
-  height: 11px;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
   border: 2.5px solid #fff;
   border-top: none;
-  border-right: none;
-  transform: rotate(-45deg) scaleX(-1);
+  border-left: none;
+  transform: rotate(45deg);
 }
 
 /* ── Item text ── */
