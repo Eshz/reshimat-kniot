@@ -105,7 +105,7 @@ export default function App() {
           <div className="splash-inner">
             <div className="splash-emoji">🛒</div>
             <h1 className="splash-title">רשימת קניות</h1>
-            <p className="splash-sub">הרשימה שלכם</p>
+            <p className="splash-sub">הרשימה שלנו</p>
           </div>
         </div>
       )}
