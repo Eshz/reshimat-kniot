@@ -55,13 +55,11 @@ export default function App() {
   }, [editingId])
 
   const filteredItems = items.filter(item => {
-    if (tab === 'pending') return !item.checked
-    if (tab === 'done') return item.checked
+    if (tab === 'shopping') return item.checked
     return true
   })
 
-  const pendingCount = items.filter(i => !i.checked).length
-  const doneCount = items.filter(i => i.checked).length
+  const checkedCount = items.filter(i => i.checked).length
 
   function toggleItem(id) {
     if (editMode) return
@@ -138,25 +136,18 @@ export default function App() {
             <span className="tab-count">{items.length}</span>
           </button>
           <button
-            className={`tab ${tab === 'pending' ? 'active' : ''}`}
-            onClick={() => setTab('pending')}
+            className={`tab ${tab === 'shopping' ? 'active' : ''}`}
+            onClick={() => setTab('shopping')}
           >
             לקנות
-            <span className="tab-count">{pendingCount}</span>
-          </button>
-          <button
-            className={`tab ${tab === 'done' ? 'active' : ''}`}
-            onClick={() => setTab('done')}
-          >
-            נקנה
-            <span className="tab-count">{doneCount}</span>
+            <span className="tab-count">{checkedCount}</span>
           </button>
         </nav>
 
         <main className="list-container">
           {filteredItems.length === 0 && (
             <div className="empty">
-              {tab === 'done' ? '🎉 לא נקנו פריטים עדיין' : '✅ הרשימה ריקה'}
+              {tab === 'shopping' ? '🛒 לא סומנו פריטים עדיין' : '✅ הרשימה ריקה'}
             </div>
           )}
 
