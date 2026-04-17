@@ -328,13 +328,12 @@ html, body {
   bottom: 0;
   right: 0;
   left: 0;
-  padding: 10px 16px env(safe-area-inset-bottom, 16px);
+  padding: 10px 16px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
   background: var(--bg);
   border-top: 1px solid var(--border);
   display: flex;
   gap: 10px;
-  max-width: 520px;
-  margin: 0 auto;
   direction: rtl;
 }
 
