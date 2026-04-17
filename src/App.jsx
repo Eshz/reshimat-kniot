@@ -220,15 +220,17 @@ export default function App() {
         </main>
 
         <form className="add-form" onSubmit={addItem}>
-          <input
-            ref={inputRef}
-            className="add-input"
-            type="text"
-            placeholder="הוסף פריט חדש..."
-            value={newText}
-            onChange={e => setNewText(e.target.value)}
-          />
-          <button className="btn-add" type="submit">+</button>
+          <div className="add-form-inner">
+            <input
+              ref={inputRef}
+              className="add-input"
+              type="text"
+              placeholder="הוסף פריט חדש..."
+              value={newText}
+              onChange={e => setNewText(e.target.value)}
+            />
+            <button className="btn-add" type="submit">+</button>
+          </div>
         </form>
       </div>
     </>
