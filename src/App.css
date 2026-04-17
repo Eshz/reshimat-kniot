@@ -220,6 +220,7 @@ html, body {
   box-shadow: var(--shadow);
   border: 1.5px solid transparent;
   transition: border-color 0.15s, background 0.15s;
+  cursor: pointer;
 }
 
 /* Checked = highlighted with green tint, NO strikethrough */
@@ -228,8 +229,9 @@ html, body {
   border-color: var(--green-pale);
 }
 
-/* Edit mode — items get a left border accent */
+/* Edit mode */
 .item.editing {
+  cursor: default;
   border-color: #f3f4f6;
 }
 

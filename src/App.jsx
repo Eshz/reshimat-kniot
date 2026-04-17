@@ -178,15 +178,20 @@ export default function App() {
 
           <ul className="list">
             {filteredItems.map(item => (
-              <li key={item.id} className={`item ${item.checked ? 'checked' : ''} ${editMode ? 'editing' : ''}`}>
+              <li
+                key={item.id}
+                className={`item ${item.checked ? 'checked' : ''} ${editMode ? 'editing' : ''}`}
+                onClick={!editMode && editingId !== item.id ? () => toggleItem(item.id) : undefined}
+              >
                 {editMode ? (
-                  <button className="btn-remove" onClick={() => removeItem(item.id)}>−</button>
+                  <button className="btn-remove" onClick={e => { e.stopPropagation(); removeItem(item.id) }}>−</button>
                 ) : (
                   <input
                     type="checkbox"
                     className="checkbox"
                     checked={item.checked}
                     onChange={() => toggleItem(item.id)}
+                    onClick={e => e.stopPropagation()}
                   />
                 )}
 
