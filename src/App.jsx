@@ -1,0 +1,208 @@
+import { useState, useEffect, useRef } from 'react'
+import './App.css'
+
+const STORAGE_KEY = 'reshimat-kniot-items'
+
+const DEFAULT_ITEMS = [
+  { id: 1, text: 'חלב', checked: false },
+  { id: 2, text: 'לחם', checked: false },
+  { id: 3, text: 'ביצים', checked: false },
+  { id: 4, text: 'גבינה', checked: false },
+  { id: 5, text: 'עגבניות', checked: false },
+]
+
+function loadItems() {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored) return JSON.parse(stored)
+  } catch {}
+  return DEFAULT_ITEMS
+}
+
+function saveItems(items) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
+}
+
+let nextId = Date.now()
+
+export default function App() {
+  const [showSplash, setShowSplash] = useState(true)
+  const [splashFading, setSplashFading] = useState(false)
+  const [items, setItems] = useState(loadItems)
+  const [tab, setTab] = useState('all') // 'all' | 'pending' | 'done'
+  const [newText, setNewText] = useState('')
+  const [editingId, setEditingId] = useState(null)
+  const [editText, setEditText] = useState('')
+  const inputRef = useRef(null)
+  const editRef = useRef(null)
+
+  useEffect(() => {
+    const fadeTimer = setTimeout(() => setSplashFading(true), 1600)
+    const hideTimer = setTimeout(() => setShowSplash(false), 2200)
+    return () => { clearTimeout(fadeTimer); clearTimeout(hideTimer) }
+  }, [])
+
+  useEffect(() => {
+    saveItems(items)
+  }, [items])
+
+  useEffect(() => {
+    if (editingId && editRef.current) {
+      editRef.current.focus()
+      editRef.current.select()
+    }
+  }, [editingId])
+
+  const filteredItems = items.filter(item => {
+    if (tab === 'pending') return !item.checked
+    if (tab === 'done') return item.checked
+    return true
+  })
+
+  const pendingCount = items.filter(i => !i.checked).length
+  const doneCount = items.filter(i => i.checked).length
+
+  function toggleItem(id) {
+    setItems(prev => prev.map(i => i.id === id ? { ...i, checked: !i.checked } : i))
+  }
+
+  function addItem(e) {
+    e.preventDefault()
+    const text = newText.trim()
+    if (!text) return
+    setItems(prev => [...prev, { id: ++nextId, text, checked: false }])
+    setNewText('')
+    inputRef.current?.focus()
+  }
+
+  function removeItem(id) {
+    setItems(prev => prev.filter(i => i.id !== id))
+  }
+
+  function startEdit(item) {
+    setEditingId(item.id)
+    setEditText(item.text)
+  }
+
+  function saveEdit(id) {
+    const text = editText.trim()
+    if (text) {
+      setItems(prev => prev.map(i => i.id === id ? { ...i, text } : i))
+    }
+    setEditingId(null)
+  }
+
+  function clearDone() {
+    setItems(prev => prev.filter(i => !i.checked))
+  }
+
+  return (
+    <>
+      {showSplash && (
+        <div className={`splash ${splashFading ? 'fade-out' : ''}`}>
+          <div className="splash-inner">
+            <div className="splash-emoji">🛒</div>
+            <h1 className="splash-title">רשימת קניות</h1>
+            <p className="splash-sub">הרשימה שלכם</p>
+          </div>
+        </div>
+      )}
+
+      <div className="app">
+        <header className="header">
+          <span className="header-emoji">🛒</span>
+          <h1 className="header-title">רשימת קניות</h1>
+        </header>
+
+        <nav className="tabs">
+          <button
+            className={`tab ${tab === 'all' ? 'active' : ''}`}
+            onClick={() => setTab('all')}
+          >
+            הכל
+            <span className="tab-count">{items.length}</span>
+          </button>
+          <button
+            className={`tab ${tab === 'pending' ? 'active' : ''}`}
+            onClick={() => setTab('pending')}
+          >
+            לקנות
+            <span className="tab-count">{pendingCount}</span>
+          </button>
+          <button
+            className={`tab ${tab === 'done' ? 'active' : ''}`}
+            onClick={() => setTab('done')}
+          >
+            נקנה
+            <span className="tab-count">{doneCount}</span>
+          </button>
+        </nav>
+
+        <main className="list-container">
+          {filteredItems.length === 0 && (
+            <div className="empty">
+              {tab === 'done' ? '🎉 לא נקנו פריטים עדיין' : '✅ הרשימה ריקה'}
+            </div>
+          )}
+
+          <ul className="list">
+            {filteredItems.map(item => (
+              <li key={item.id} className={`item ${item.checked ? 'checked' : ''}`}>
+                <input
+                  type="checkbox"
+                  className="checkbox"
+                  checked={item.checked}
+                  onChange={() => toggleItem(item.id)}
+                />
+                {editingId === item.id ? (
+                  <input
+                    ref={editRef}
+                    className="edit-input"
+                    value={editText}
+                    onChange={e => setEditText(e.target.value)}
+                    onBlur={() => saveEdit(item.id)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') saveEdit(item.id)
+                      if (e.key === 'Escape') setEditingId(null)
+                    }}
+                  />
+                ) : (
+                  <span
+                    className="item-text"
+                    onDoubleClick={() => startEdit(item)}
+                  >
+                    {item.text}
+                  </span>
+                )}
+                <div className="item-actions">
+                  <button className="btn-icon edit" onClick={() => startEdit(item)} title="ערוך">✏️</button>
+                  <button className="btn-icon remove" onClick={() => removeItem(item.id)} title="מחק">🗑️</button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </main>
+
+        <form className="add-form" onSubmit={addItem}>
+          <input
+            ref={inputRef}
+            className="add-input"
+            type="text"
+            placeholder="הוסף פריט חדש..."
+            value={newText}
+            onChange={e => setNewText(e.target.value)}
+          />
+          <button className="btn-add" type="submit">+</button>
+        </form>
+
+        {doneCount > 0 && (
+          <div className="footer">
+            <button className="btn-clear" onClick={clearDone}>
+              נקה פריטים שנקנו ({doneCount})
+            </button>
+          </div>
+        )}
+      </div>
+    </>
+  )
+}

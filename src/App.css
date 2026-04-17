@@ -1,0 +1,381 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --green: #2d6a4f;
+  --green-light: #40916c;
+  --green-pale: #d8f3dc;
+  --green-bg: #f0faf4;
+  --red-light: #fee2e2;
+  --red: #ef4444;
+  --text: #1a2e1f;
+  --text-muted: #6b7280;
+  --border: #d1d5db;
+  --bg: #ffffff;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --radius: 12px;
+}
+
+html, body {
+  height: 100%;
+  background: var(--green-bg);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--text);
+  direction: rtl;
+}
+
+#root {
+  width: 100%;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Splash ── */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease;
+}
+
+.splash.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.splash-inner {
+  text-align: center;
+  color: #fff;
+  animation: splash-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes splash-in {
+  from { transform: scale(0.7) translateY(20px); opacity: 0; }
+  to   { transform: scale(1) translateY(0);      opacity: 1; }
+}
+
+.splash-emoji {
+  font-size: 80px;
+  line-height: 1;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+}
+
+.splash-title {
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+
+.splash-sub {
+  font-size: 16px;
+  opacity: 0.75;
+}
+
+/* ── App shell ── */
+.app {
+  max-width: 520px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 0 100px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+}
+
+/* ── Header ── */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 20px 16px;
+  justify-content: center;
+}
+
+.header-emoji {
+  font-size: 28px;
+}
+
+.header-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--green);
+}
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px 16px;
+  justify-content: center;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 100px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.tab:hover {
+  border-color: var(--green-light);
+  color: var(--green);
+}
+
+.tab.active {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+}
+
+.tab-count {
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(0,0,0,0.12);
+  border-radius: 100px;
+  padding: 1px 7px;
+  min-width: 22px;
+  text-align: center;
+}
+
+.tab.active .tab-count {
+  background: rgba(255,255,255,0.25);
+}
+
+/* ── List ── */
+.list-container {
+  flex: 1;
+  padding: 0 16px;
+}
+
+.empty {
+  text-align: center;
+  padding: 48px 16px;
+  color: var(--text-muted);
+  font-size: 16px;
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+  border: 1.5px solid transparent;
+  transition: border-color 0.15s, background 0.15s, opacity 0.15s;
+}
+
+.item:hover {
+  border-color: var(--green-pale);
+}
+
+.item.checked {
+  background: var(--green-pale);
+  opacity: 0.75;
+}
+
+.item.checked .item-text {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+/* ── Checkbox ── */
+.checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  background: var(--bg);
+}
+
+.checkbox:checked {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.checkbox:checked::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  right: 6px;
+  width: 6px;
+  height: 10px;
+  border: 2px solid #fff;
+  border-top: none;
+  border-right: none;
+  transform: rotate(-45deg) scaleX(-1);
+}
+
+/* ── Item text ── */
+.item-text {
+  flex: 1;
+  font-size: 17px;
+  line-height: 1.4;
+  cursor: default;
+  word-break: break-word;
+}
+
+.edit-input {
+  flex: 1;
+  font-size: 17px;
+  font-family: inherit;
+  border: none;
+  outline: none;
+  background: transparent;
+  border-bottom: 2px solid var(--green);
+  padding: 2px 0;
+  direction: rtl;
+  color: var(--text);
+}
+
+/* ── Action buttons ── */
+.item-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.item:hover .item-actions {
+  opacity: 1;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 6px;
+  border-radius: 8px;
+  transition: background 0.15s;
+  line-height: 1;
+}
+
+.btn-icon:hover {
+  background: rgba(0,0,0,0.07);
+}
+
+/* ── Add form ── */
+.add-form {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  padding: 12px 16px 20px;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+  max-width: 520px;
+  margin: 0 auto;
+  direction: rtl;
+}
+
+.add-input {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 100px;
+  border: 1.5px solid var(--border);
+  font-size: 16px;
+  font-family: inherit;
+  direction: rtl;
+  outline: none;
+  color: var(--text);
+  background: var(--green-bg);
+  transition: border-color 0.15s;
+}
+
+.add-input:focus {
+  border-color: var(--green);
+}
+
+.add-input::placeholder {
+  color: var(--text-muted);
+}
+
+.btn-add {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: var(--green);
+  color: #fff;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.btn-add:hover {
+  background: var(--green-light);
+}
+
+.btn-add:active {
+  transform: scale(0.93);
+}
+
+/* ── Footer clear button ── */
+.footer {
+  padding: 0 16px 16px;
+  text-align: center;
+}
+
+.btn-clear {
+  background: none;
+  border: 1.5px solid var(--red);
+  color: var(--red);
+  border-radius: 100px;
+  padding: 8px 20px;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-clear:hover {
+  background: var(--red-light);
+}
+
+/* ── Always show actions on touch devices ── */
+@media (hover: none) {
+  .item-actions {
+    opacity: 1;
+  }
+}
