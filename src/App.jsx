@@ -29,16 +29,17 @@ export default function App() {
   const [showSplash, setShowSplash] = useState(true)
   const [splashFading, setSplashFading] = useState(false)
   const [items, setItems] = useState(loadItems)
-  const [tab, setTab] = useState('all') // 'all' | 'pending' | 'done'
+  const [tab, setTab] = useState('all')
   const [newText, setNewText] = useState('')
+  const [editMode, setEditMode] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [editText, setEditText] = useState('')
   const inputRef = useRef(null)
   const editRef = useRef(null)
 
   useEffect(() => {
-    const fadeTimer = setTimeout(() => setSplashFading(true), 1600)
-    const hideTimer = setTimeout(() => setShowSplash(false), 2200)
+    const fadeTimer = setTimeout(() => setSplashFading(true), 800)
+    const hideTimer = setTimeout(() => setShowSplash(false), 1300)
     return () => { clearTimeout(fadeTimer); clearTimeout(hideTimer) }
   }, [])
 
@@ -63,6 +64,7 @@ export default function App() {
   const doneCount = items.filter(i => i.checked).length
 
   function toggleItem(id) {
+    if (editMode) return
     setItems(prev => prev.map(i => i.id === id ? { ...i, checked: !i.checked } : i))
   }
 
@@ -77,9 +79,10 @@ export default function App() {
 
   function removeItem(id) {
     setItems(prev => prev.filter(i => i.id !== id))
+    if (editingId === id) setEditingId(null)
   }
 
-  function startEdit(item) {
+  function startInlineEdit(item) {
     setEditingId(item.id)
     setEditText(item.text)
   }
@@ -92,8 +95,9 @@ export default function App() {
     setEditingId(null)
   }
 
-  function clearDone() {
-    setItems(prev => prev.filter(i => !i.checked))
+  function toggleEditMode() {
+    setEditMode(prev => !prev)
+    setEditingId(null)
   }
 
   return (
@@ -110,8 +114,19 @@ export default function App() {
 
       <div className="app">
         <header className="header">
-          <span className="header-emoji">🛒</span>
-          <h1 className="header-title">רשימת קניות</h1>
+          <div className="header-left">
+            <button
+              className={`btn-edit-mode ${editMode ? 'active' : ''}`}
+              onClick={toggleEditMode}
+            >
+              {editMode ? 'סיום' : 'ערוך'}
+            </button>
+          </div>
+          <div className="header-center">
+            <span className="header-emoji">🛒</span>
+            <h1 className="header-title">רשימת קניות</h1>
+          </div>
+          <div className="header-right" />
         </header>
 
         <nav className="tabs">
@@ -147,13 +162,18 @@ export default function App() {
 
           <ul className="list">
             {filteredItems.map(item => (
-              <li key={item.id} className={`item ${item.checked ? 'checked' : ''}`}>
-                <input
-                  type="checkbox"
-                  className="checkbox"
-                  checked={item.checked}
-                  onChange={() => toggleItem(item.id)}
-                />
+              <li key={item.id} className={`item ${item.checked ? 'checked' : ''} ${editMode ? 'editing' : ''}`}>
+                {editMode ? (
+                  <button className="btn-remove" onClick={() => removeItem(item.id)}>−</button>
+                ) : (
+                  <input
+                    type="checkbox"
+                    className="checkbox"
+                    checked={item.checked}
+                    onChange={() => toggleItem(item.id)}
+                  />
+                )}
+
                 {editingId === item.id ? (
                   <input
                     ref={editRef}
@@ -169,15 +189,15 @@ export default function App() {
                 ) : (
                   <span
                     className="item-text"
-                    onDoubleClick={() => startEdit(item)}
+                    onClick={editMode ? () => startInlineEdit(item) : undefined}
                   >
                     {item.text}
                   </span>
                 )}
-                <div className="item-actions">
-                  <button className="btn-icon edit" onClick={() => startEdit(item)} title="ערוך">✏️</button>
-                  <button className="btn-icon remove" onClick={() => removeItem(item.id)} title="מחק">🗑️</button>
-                </div>
+
+                {editMode && editingId !== item.id && (
+                  <button className="btn-rename" onClick={() => startInlineEdit(item)}>✏️</button>
+                )}
               </li>
             ))}
           </ul>
@@ -194,14 +214,6 @@ export default function App() {
           />
           <button className="btn-add" type="submit">+</button>
         </form>
-
-        {doneCount > 0 && (
-          <div className="footer">
-            <button className="btn-clear" onClick={clearDone}>
-              נקה פריטים שנקנו ({doneCount})
-            </button>
-          </div>
-        )}
       </div>
     </>
   )
