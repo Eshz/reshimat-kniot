@@ -117,7 +117,7 @@ export default function App() {
               className={`btn-edit-mode ${editMode ? 'active' : ''}`}
               onClick={toggleEditMode}
             >
-              {editMode ? 'סיום' : 'ערוך'}
+              {editMode ? 'סיום' : 'עריכה'}
             </button>
           </div>
           <div className="header-center">
